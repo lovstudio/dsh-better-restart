@@ -6,7 +6,7 @@ DeepSeek Harness 前端插件：**一键原地重启整个应用**（含后端�
 
 | npm 包 | 角色 |
 |---|---|
-| `@deepseek-ai/dsh-better-restart` | host 半：`FrontendRestartController`（`@Remote('restart')` 转发 launcher 的 `appRestart`；`@Remote('status')` 注入 `agents` 查询运行状态） |
+| `@deepseek-ai/dsh-better-restart` | host 半：`BetterRestartController`（`@Remote('restart')` 转发 launcher 的 `appRestart`；`@Remote('status')` 注入 `agents` 查询运行状态） |
 | `@deepseek-ai/dsh-better-restart-ui` | 浏览器 UI 半：设置页重启按钮、确认弹窗、运行状态实时监测、重启中 loading |
 
 ## 功能
