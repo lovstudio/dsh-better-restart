@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-frontend-restart（+ dsh-frontend-restart-ui）
+# @deepseek-ai/dsh-better-restart（+ dsh-better-restart-ui）
 
 DeepSeek Harness 前端插件：**一键原地重启整个应用**（含后端）。从浏览器设置页发起，无需手动停进程。
 
@@ -6,8 +6,8 @@ DeepSeek Harness 前端插件：**一键原地重启整个应用**（含后端�
 
 | npm 包 | 角色 |
 |---|---|
-| `@deepseek-ai/dsh-frontend-restart` | host 半：`FrontendRestartController`（`@Remote('restart')` 转发 launcher 的 `appRestart`；`@Remote('status')` 注入 `agents` 查询运行状态） |
-| `@deepseek-ai/dsh-frontend-restart-ui` | 浏览器 UI 半：设置页重启按钮、确认弹窗、运行状态实时监测、重启中 loading |
+| `@deepseek-ai/dsh-better-restart` | host 半：`FrontendRestartController`（`@Remote('restart')` 转发 launcher 的 `appRestart`；`@Remote('status')` 注入 `agents` 查询运行状态） |
+| `@deepseek-ai/dsh-better-restart-ui` | 浏览器 UI 半：设置页重启按钮、确认弹窗、运行状态实时监测、重启中 loading |
 
 ## 功能
 
@@ -20,15 +20,15 @@ DeepSeek Harness 前端插件：**一键原地重启整个应用**（含后端�
 两个包一起安装（bundle patch 各自注册进 profile）：
 
 ```sh
-dsh plugin --profile web add @deepseek-ai/dsh-frontend-restart
-dsh plugin --profile web add @deepseek-ai/dsh-frontend-restart-ui
+dsh plugin --profile web add @deepseek-ai/dsh-better-restart
+dsh plugin --profile web add @deepseek-ai/dsh-better-restart-ui
 ```
 
 安装后浏览器「设置」页头出现「重启应用」按钮。
 
 ## 架构
 
-完整实现位于 `deepseek-harness` monorepo：`packages/core/frontend-restart`（host）与 `packages/client/frontend-restart-ui`（UI）。本仓库为独立展示与发布入口：
+完整实现位于 `deepseek-harness` monorepo：`packages/core/better-restart`（host）与 `packages/client/better-restart-ui`（UI）。本仓库为独立展示与发布入口：
 
 - 上游：https://github.com/deepseek-ai/deepseek-harness
 - 完整代码（含本插件）：https://github.com/lovstudio/deepseek-harness
