@@ -1,0 +1,8 @@
+# Registers the Lovstudio better-restart plugin. The node half exposes two
+# webServer routes (/better-restart/status, /better-restart); the browser half
+# (declared by `dsh.client`) is served to the page by the client module system
+# and renders the settings-header restart action that calls them.
+
+- insert:
+    - id: better-restart
+      name: '@lovstudio/dsh-better-restart'

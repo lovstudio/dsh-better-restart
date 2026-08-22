@@ -1,38 +1,45 @@
-# @deepseek-ai/dsh-better-restart（+ dsh-better-restart-ui）
+# dsh-better-restart
 
-DeepSeek Harness 前端插件：**一键原地重启整个应用**（含后端）。从浏览器设置页发起，无需手动停进程。
+Lovstudio's in-place application restart plugin for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) web surface. The settings header gains a **Restart app** action that re-boots the whole application in place (reloading the current tab, not opening a new one), with a confirmation dialog that watches running conversations live.
 
-本仓库是「重启」插件的**单一入口**，bundle 两个 npm 包：
+This is a **Lovstudio** plugin, not a DeepSeek-AI package, distributed under the `@lovstudio` scope.
 
-| npm 包 | 角色 |
-|---|---|
-| `@deepseek-ai/dsh-better-restart` | host 半：`BetterRestartController`（`@Remote('restart')` 转发 launcher 的 `appRestart`；`@Remote('status')` 注入 `agents` 查询运行状态） |
-| `@deepseek-ai/dsh-better-restart-ui` | 浏览器 UI 半：设置页重启按钮、确认弹窗、运行状态实时监测、重启中 loading |
+## What it does
 
-## 功能
+- **Host half** exposes two `webServer` routes:
+  - `POST /better-restart/status` — `{ running, active }` (how many agent loops are mid-turn).
+  - `POST /better-restart` — triggers the launcher's in-place restart.
+- **Client half** (settings-header button):
+  - Confirmation dialog that **poll**: s agent activity live (1.5s). With conversations running it reports the count and gates the restart behind an explicit acknowledgement; without running conversations the restart passes straight through.
+  - In-flight spinner + disabled button while restarting; the current tab reloads on reconnect.
 
-- 设置页「重启应用」按钮 → 应用树 re-boot（dispose 当前 fiber + 重新 boot，PID 不变）
-- 确认弹窗实时监测运行中的对话（`@Remote('status')`，1.5s 轮询）：有对话运行时需勾选确认，无运行直接放行
-- 重启进行中按钮 loading + 防重复；完成后当前页自动刷新，不新开标签页
+The plugin is completely runtime and self-contained: it reaches DSH capabilities through the injected Cordis `ctx` only (`webServer`, `agents`, `appRestart`), and the client page reaches the host through plain fetch to those routes — no Remote assembly, no build-time transforms. It has no package dependencies beyond node builtins.
 
-## 安装
+## Install
 
-两个包一起安装（bundle patch 各自注册进 profile）：
+Plugins distribute as a **bundle** (`dsh.bundle.patch` → `cordis.patch.yml`). Install into the `web` profile (the one `dsh web` boots):
 
 ```sh
-dsh plugin --profile web add @deepseek-ai/dsh-better-restart
-dsh plugin --profile web add @deepseek-ai/dsh-better-restart-ui
+# from git (append #<sha> to pin a commit)
+dsh plugin --profile web add github:lovstudio/dsh-better-restart
+
+# or straight from npm
+dsh plugin --profile web add @lovstudio/dsh-better-restart
 ```
 
-安装后浏览器「设置」页头出现「重启应用」按钮。
+The client half (`dsh.client`) is served to the page automatically by the client module system once the plugin is composed — no rebuild of the web application is needed.
 
-## 架构
+## Use
 
-完整实现位于 `deepseek-harness` monorepo：`packages/core/better-restart`（host）与 `packages/client/better-restart-ui`（UI）。本仓库为独立展示与发布入口：
+1. Start the web UI: `dsh web`.
+2. Open the settings header → **Restart app**.
+3. Confirm; the app restarts in place and the current tab reloads.
 
-- 上游：https://github.com/deepseek-ai/deepseek-harness
-- 完整代码（含本插件）：https://github.com/lovstudio/deepseek-harness
+## Notes
+
+- Requires the `webServer`, `agents`, and `appRestart` services, all provided by the harness launcher / `@deepseek-ai/dsh-base`.
+- Copy lives under `@lovstudio/dsh-better-restart` (zh/en), auto-registered to the `better-restart-ui` locale namespace.
 
 ## License
 
-MIT
+[MIT](LICENSE)
