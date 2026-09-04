@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState, type ReactNode } from 'react'
-import { Button, IconLoadingOutline16, Modal } from '@deepseek-ai/dsh-client-ui-primitives'
+import { Button, IconLoadingOutline16, Modal, writeClipboard } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import css from './styles.ts'
 
@@ -17,6 +17,9 @@ const RESTARTING_TIMEOUT_MS = 15_000
 
 /** How often the open dialog re-reads agent activity. */
 const STATUS_POLL_MS = 1_500
+
+/** How long the copy confirmation stays on the failure chip. */
+const COPIED_FEEDBACK_MS = 1_500
 
 /** Agent activity the confirmation reads before allowing the restart. */
 export interface RestartStatus {
@@ -29,7 +32,7 @@ export interface RestartStatus {
 /** Registrant-owned dependencies of {@link RestartAction}. */
 export interface RestartActionInjected {
   /** In-place restart call, forwarding to the host remote method. */
-  restart: () => void
+  restart: () => Promise<void>
   /** Current agent activity, polled while the confirmation is open. */
   status: () => Promise<RestartStatus>
 }
@@ -48,6 +51,8 @@ export function RestartAction({ t, restart, status }: RestartActionProps): React
   const [restarting, setRestarting] = useState(false)
   const [activity, setActivity] = useState<RestartStatus | undefined>()
   const [statusUnavailable, setStatusUnavailable] = useState(false)
+  const [failure, setFailure] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   // Watch agent activity live while the dialog is open: the user decides with
   // current facts, not a stale snapshot from the moment they clicked.
@@ -77,7 +82,12 @@ export function RestartAction({ t, restart, status }: RestartActionProps): React
   const confirm = (): void => {
     setConfirming(false)
     setRestarting(true)
-    restart()
+    setFailure(null)
+    setCopied(false)
+    void restart().catch((reason: unknown) => {
+      setRestarting(false)
+      setFailure(reason instanceof Error ? reason.message : String(reason))
+    })
     // A restart that never reconnects (and so never reloads the tab) must not
     // leave the button disabled forever; the window lapses after the re-boot's
     // own duration and the user can retry.
@@ -103,6 +113,21 @@ export function RestartAction({ t, restart, status }: RestartActionProps): React
       >
         {restarting ? t('restarting') : t('restart')}
       </Button>
+      {failure === null ? null : (
+        <button
+          type="button"
+          className={css.failure}
+          title={failure}
+          onClick={() => {
+            void writeClipboard(failure).then(() => {
+              setCopied(true)
+              setTimeout(() => { setCopied(false) }, COPIED_FEEDBACK_MS)
+            })
+          }}
+        >
+          {copied ? t('copied') : t('restartFailed')}
+        </button>
+      )}
       <Modal
         open={confirming}
         onClose={() => { setConfirming(false) }}

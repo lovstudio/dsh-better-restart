@@ -32,7 +32,16 @@ function apply(ctx) {
 			kind: "exact",
 			path: RESTART_PATH,
 			handler: async (_req, res) => {
-				await ctx.get("appRestart")?.();
+				const restart = ctx.get("appRestart");
+				if (restart === void 0) {
+					res.writeHead(503, {
+						"Content-Type": "application/json",
+						"Cache-Control": "no-store"
+					});
+					res.end(JSON.stringify({ error: "this DSH launcher provides no appRestart service; restart the harness process yourself" }));
+					return;
+				}
+				await restart();
 				res.writeHead(204).end();
 			}
 		});

@@ -4,6 +4,8 @@ export const NS = 'better-restart-ui'
 export const en = {
   restart: 'Restart app',
   restarting: 'Restarting…',
+  restartFailed: 'Restart failed — copy',
+  copied: 'Copied',
   confirmTitle: 'Restart app?',
   confirmSafe: 'This restarts the whole application and reloads the current tab.',
   confirmRunning: '{count} conversations are running; restarting interrupts them and discards their progress.',
@@ -17,6 +19,8 @@ export const en = {
 export const zh = {
   restart: '重启应用',
   restarting: '重启中…',
+  restartFailed: '重启失败 — 复制',
+  copied: '已复制',
   confirmTitle: '重启应用？',
   confirmSafe: '这会重新加载整个应用，并刷新当前页面。',
   confirmRunning: '有 {count} 个对话正在运行，重启会中断它们并丢弃进度。',

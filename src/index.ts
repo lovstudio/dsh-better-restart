@@ -51,7 +51,17 @@ export function apply(ctx: Context): void {
       kind: 'exact',
       path: RESTART_PATH,
       handler: async (_req: IncomingMessage, res: ServerResponse): Promise<void> => {
-        await ctx.get<() => Promise<void>>('appRestart')?.()
+        const restart = ctx.get<() => Promise<void>>('appRestart')
+        // Older launchers expose no restart service at all. Answering 204 there
+        // makes a dead button look like a working one, so say what happened.
+        if (restart === undefined) {
+          res.writeHead(503, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' })
+          res.end(JSON.stringify({
+            error: 'this DSH launcher provides no appRestart service; restart the harness process yourself',
+          }))
+          return
+        }
+        await restart()
         res.writeHead(204).end()
       },
     })

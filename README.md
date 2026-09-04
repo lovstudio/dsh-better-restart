@@ -25,16 +25,18 @@ Prerequisites: Node.js 22.19+ or 24+, pnpm 11 (`corepack enable` or `npm i -g pn
 ```sh
 git clone --depth 1 --branch dsh-v0.1.2-rc.1 https://github.com/deepseek-ai/deepseek-harness.git
 cd deepseek-harness && pnpm install && pnpm run build
-pnpm dsh plugin --profile web add -w github:lovstudio/dsh-better-restart#v0.1.2
+pnpm dsh plugin --profile web add -w github:lovstudio/dsh-better-restart#v0.1.3
 pnpm dsh web
 ```
 
 **Without a checkout (npx; compiled harness only):**
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add -w github:lovstudio/dsh-better-restart#v0.1.2
+npx @deepseek-ai/dsh plugin --profile web add -w github:lovstudio/dsh-better-restart#v0.1.3
 npx @deepseek-ai/dsh web
 ```
+
+The restart itself is the launcher's: the plugin calls the `appRestart` service the host context provides. A launcher that provides none (`dsh` 0.1.2-rc.1 does not) makes `POST /better-restart` answer 503 with that reason, the settings action shows a copyable failure instead of pretending to restart, and any plugin driving this service — the plugin marketplace, for one — sees the same rejection. Restart the harness process yourself there.
 
 `web` is the profile `dsh web` boots. The tag pins a commit whose `lib/` is prebuilt and committed, so nothing is compiled on your machine. Verified on 2026-09-04 against `dsh-v0.1.2-rc.1` in both forms. Remove with `dsh plugin --profile web remove @lovstudio/dsh-better-restart`.
 

@@ -22,8 +22,11 @@ import { RestartAction, type RestartActionInjected, type RestartStatus } from '.
 export interface BetterRestartUi {
   /** Read current agent activity before an interrupting restart. */
   status(): Promise<RestartStatus>
-  /** Request an in-place Host restart and reload after reconnect. */
-  restart(): void
+  /**
+   * Request an in-place Host restart and reload after reconnect. Rejects when
+   * the launcher has no restart service, so callers can say so.
+   */
+  restart(): Promise<void>
 }
 
 declare module '@deepseek-ai/cordis' {
@@ -60,10 +63,21 @@ async function readStatus(): Promise<RestartStatus> {
 }
 
 /** Request a restart and arm the reconnect-triggered page reload. */
-function restart(): void {
+async function restart(): Promise<void> {
   pendingReload = true
-  setTimeout(() => { pendingReload = false }, RELOAD_WINDOW_MS)
-  void fetch(RESTART_PATH, { method: 'POST' })
+  const lapse = setTimeout(() => { pendingReload = false }, RELOAD_WINDOW_MS)
+  const response = await fetch(RESTART_PATH, { method: 'POST' }).catch((reason: unknown) => {
+    pendingReload = false
+    clearTimeout(lapse)
+    throw reason instanceof Error ? reason : new Error(String(reason))
+  })
+  if (response.ok) return
+  pendingReload = false
+  clearTimeout(lapse)
+  const body = await response.json().catch(() => ({})) as { error?: unknown }
+  throw new Error(typeof body.error === 'string'
+    ? body.error
+    : `better-restart failed: ${String(response.status)} ${response.statusText}`)
 }
 
 /**
