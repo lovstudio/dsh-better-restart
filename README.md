@@ -25,14 +25,14 @@ Prerequisites: Node.js 22.19+ or 24+, pnpm 11 (`corepack enable` or `npm i -g pn
 ```sh
 git clone --depth 1 --branch dsh-v0.1.2-rc.1 https://github.com/deepseek-ai/deepseek-harness.git
 cd deepseek-harness && pnpm install && pnpm run build
-pnpm dsh plugin --profile web add github:lovstudio/dsh-better-restart#v0.1.2
+pnpm dsh plugin --profile web add -w github:lovstudio/dsh-better-restart#v0.1.2
 pnpm dsh web
 ```
 
 **Without a checkout (npx; compiled harness only):**
 
 ```sh
-npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-better-restart#v0.1.2
+npx @deepseek-ai/dsh plugin --profile web add -w github:lovstudio/dsh-better-restart#v0.1.2
 npx @deepseek-ai/dsh web
 ```
 
@@ -54,7 +54,7 @@ Keep this checkout outside the DeepSeek Harness repository. Install and build it
 pnpm install
 pnpm run watch
 
-DSH_HOME=/Users/mark/.dsh-lov-dev pnpm --dir /path/to/deepseek-harness dsh plugin --profile web add link:/path/to/dsh-better-restart
+DSH_HOME=/Users/mark/.dsh-lov-dev pnpm --dir /path/to/deepseek-harness dsh plugin --profile web add -w link:/path/to/dsh-better-restart
 ```
 
 The Host consumes the generated `index.js`, while the browser module system consumes `lib/client.js`. Client-only rebuilds are detected by the Harness Client HMR watcher; Host, manifest, patch, and bundle-membership changes require a profile restart. The package build does not import a Harness tsconfig or workspace source path.
