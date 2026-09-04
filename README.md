@@ -18,15 +18,14 @@ The plugin is completely runtime and self-contained: it reaches DSH capabilities
 
 ## Install
 
-Plugins distribute as a **bundle** (`dsh.bundle.patch` → `cordis.patch.yml`). Install into the `web` profile (the one `dsh web` boots):
+Prerequisites: Node.js 22+ and pnpm (`npm i -g pnpm`) — `dsh plugin` forwards to pnpm inside the profile directory.
 
 ```sh
-# from git (append #<sha> to pin a commit)
-dsh plugin --profile web add github:lovstudio/dsh-better-restart
-
-# or straight from npm
-dsh plugin --profile web add @lovstudio/dsh-better-restart
+npx @deepseek-ai/dsh plugin --profile web add github:lovstudio/dsh-better-restart#v0.1.2
+npx @deepseek-ai/dsh web
 ```
+
+`web` is the profile `dsh web` boots. The tag pins a commit whose `lib/` is prebuilt and committed, so nothing is compiled on your machine. Verified against `@deepseek-ai/dsh@0.1.2-rc.1`. Remove with `npx @deepseek-ai/dsh plugin --profile web remove @lovstudio/dsh-better-restart`.
 
 The client half (`dsh.client`) is served to the page automatically by the client module system once the plugin is composed — no rebuild of the web application is needed.
 
