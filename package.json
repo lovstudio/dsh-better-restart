@@ -36,16 +36,24 @@
     },
     "client": {
       "inject": [
+        "@deepseek-ai/dsh-client-connection",
         "@deepseek-ai/dsh-client-ui-primitives",
         "@deepseek-ai/dsh-client-locale"
       ],
       "platform": "web"
     }
   },
+  "scripts": {
+    "build": "tsdown",
+    "watch": "tsdown --watch",
+    "prepack": "pnpm run build"
+  },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "^4.0.1"
+    "@deepseek-ai/cordis": "^4.0.1",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.2"
   }
 }
