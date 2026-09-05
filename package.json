@@ -1,7 +1,7 @@
 {
   "name": "@lovstudio/dsh-better-restart",
   "description": "Lovstudio in-place application restart for the DeepSeek Harness web surface: a host half exposing restart/status routes and a settings-header button with live running-conversation monitoring, confirmation dialog, and in-flight spinner.",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "main": "index.js",
   "exports": {
